@@ -17,7 +17,7 @@ channel.QueueDeclare(queue: "example-queue", exclusive: false);
 //mesaj okuyabilmek için bir event oluşturulmalı
 EventingBasicConsumer consumer = new(channel);
 channel.BasicConsume(queue:"example-queue",autoAck:false,consumer);//bildirilen kuyruğa bir mesaj geldiğinde onu almak için bu şekilde kullanırız.
-                                                                   //autoack => mesaj başarılı veya başarısız olarak alındığında silinsin mi? 
+channel.BasicQos(0,1,false);                                                               //autoack => mesaj başarılı veya başarısız olarak alındığında silinsin mi? 
 consumer.Received += (sender, e) =>
 {
     //Kuyruğa gelen mesajların işlendiği yerdir.
