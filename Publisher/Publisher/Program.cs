@@ -29,7 +29,7 @@ for(int i = 0; i < 100; i++)
 {
     await Task.Delay(200);
     byte[] message = Encoding.UTF8.GetBytes("Merhaba"+i);
-    channel.BasicPublish(exchange: "", routingKey: "example-queue", body: message,basicProperties:);//boş bırakmak veya parametre vermemek defaul exchange olan direct exchange ile çalışmasını sağlayacaktır.
+    channel.BasicPublish(exchange: "", routingKey: "example-queue", body: message,basicProperties:properties);//boş bırakmak veya parametre vermemek defaul exchange olan direct exchange ile çalışmasını sağlayacaktır.
 }
 
 
