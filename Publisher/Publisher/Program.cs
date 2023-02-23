@@ -9,7 +9,7 @@ using IConnection connection = factory.CreateConnection();
 using IModel channel = connection.CreateModel();
 
 //queue oluşturma
-channel.QueueDeclare(queue:"example-queue",exclusive:false);//durable => kuyruktaki mesajların kalıcığıyla alakalı
+channel.QueueDeclare(queue:"example-queue",exclusive:false,durable:true);//durable => kuyruktaki mesajların kalıcığıyla alakalı
                                                             //exlusive => kuyruk özel mi değil mi? Bu kuyrukta birden fazla bağlantıyla bu kuyrukta işlem yapıp yapamayacağımızı belirler.
                                                             //exclusive bu proje için false olmalıdır aynı hem consumer hem publisher bu kuyruğa bağlanabilir olmalıdır.
                                                             //autoDelete=> kuyruğun içindeki tüm mesajlar tükedildikten sonra kuyruk silinsin mi silinmesin mi onu belirler.
@@ -23,11 +23,13 @@ channel.QueueDeclare(queue:"example-queue",exclusive:false);//durable => kuyrukt
 //channel.BasicPublish(exchange:"",routingKey:"example-queue",body:message);//boş bırakmak veya parametre vermemek defaul exchange olan direct exchange ile çalışmasını sağlayacaktır.
 
 //Biraz da oyun oynayalım
+IBasicProperties properties=channel.CreateBasicProperties();
+properties.Persistent = true;
 for(int i = 0; i < 100; i++)
 {
     await Task.Delay(200);
     byte[] message = Encoding.UTF8.GetBytes("Merhaba"+i);
-    channel.BasicPublish(exchange: "", routingKey: "example-queue", body: message);//boş bırakmak veya parametre vermemek defaul exchange olan direct exchange ile çalışmasını sağlayacaktır.
+    channel.BasicPublish(exchange: "", routingKey: "example-queue", body: message,basicProperties:);//boş bırakmak veya parametre vermemek defaul exchange olan direct exchange ile çalışmasını sağlayacaktır.
 }
 
 
