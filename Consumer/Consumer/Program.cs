@@ -16,8 +16,8 @@ channel.QueueDeclare(queue: "example-queue", exclusive: false);
 //Queue’dan mesaj okuma
 //mesaj okuyabilmek için bir event oluşturulmalı
 EventingBasicConsumer consumer = new(channel);
-channel.BasicConsume(queue:"example-queue",false,consumer);//bildirilen kuyruğa bir mesaj geldiğinde onu almak için bu şekilde kullanırız.
-                                                           //autoack => mesaj alındığında silinsin mi
+channel.BasicConsume(queue:"example-queue",autoAck:false,consumer);//bildirilen kuyruğa bir mesaj geldiğinde onu almak için bu şekilde kullanırız.
+                                                                   //autoack => mesaj başarılı veya başarısız olarak alındığında silinsin mi? 
 consumer.Received += (sender, e) =>
 {
     //Kuyruğa gelen mesajların işlendiği yerdir.
@@ -25,5 +25,6 @@ consumer.Received += (sender, e) =>
     //e.Body.Span veya e.Body.ToArray():Kuyruktaki mesajın byte verisini getirecektir. 
 
     Console.WriteLine(Encoding.UTF8.GetString(e.Body.Span));
+    channel.BasicAck(e.DeliveryTag,multiple:false); //message acknowledgement configured
 };
 Console.Read();
