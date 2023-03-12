@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client;
+using System.Reflection;
 using System.Text;
 ConnectionFactory factory = new ConnectionFactory();
 //1-bağlantı oluşturma
@@ -33,18 +34,58 @@ using IModel channel = connection.CreateModel();
 //    channel.BasicPublish(exchange: "", routingKey: "example-queue", body: message,basicProperties:properties);//boş bırakmak veya parametre vermemek defaul exchange olan direct exchange ile çalışmasını sağlayacaktır.
 //}
 
-//Direct Exchange Deneme Başlangıcı//
-channel.ExchangeDeclare(exchange: "direct-exchange-example", type: ExchangeType.Direct);
-while (true)
+////Direct Exchange Deneme Başlangıcı//
+//channel.ExchangeDeclare(exchange: "direct-exchange-example", type: ExchangeType.Direct);
+//while (true)
+//{
+//    Console.Write("Mesaj : ");
+//    string message = Console.ReadLine();
+//    byte[] byteMessage = Encoding.UTF8.GetBytes(message);
+//    channel.BasicPublish(
+//        exchange: "direct-exchange-example",
+//        routingKey:"direct-queue-example",
+//        body:byteMessage);
+//}
+////Direct Exchange Deneme Bitişi//
+
+
+////Fanout Exchange Deneme Başlangıcı//
+//channel.ExchangeDeclare(exchange:"fanout-exchange-example",type:ExchangeType.Fanout);
+//for (int i = 0; i < 10; i++)
+//{
+//    await Task.Delay(200);
+//    byte[] message = Encoding.UTF8.GetBytes($"Merhaba {i}");
+//    channel.BasicPublish(
+//        exchange: "fanout-exchange-example",
+//        routingKey: string.Empty,//boşda geçebilirsin empty'de denebilir.
+//        body:message);
+
+//}
+////Fanout Exchange Deneme Bitişi//
+
+////Topic Exchange Deneme Başlangıcı//
+channel.ExchangeDeclare(
+    exchange:"topic-exchange-example",
+    type:ExchangeType.Topic
+    );
+for( int i = 0; i < 10; i++)
 {
-    Console.Write("Mesaj : ");
-    string message = Console.ReadLine();
-    byte[] byteMessage = Encoding.UTF8.GetBytes(message);
+    await Task.Delay(200);
+    byte[] message = Encoding.UTF8.GetBytes($"Merhaba {i}");
+    Console.Write("Mesajın Gönderileceği Topic Formatını Belirtiniz : ");
+    string topic = Console.ReadLine();
     channel.BasicPublish(
-        exchange: "direct-exchange-example",
-        routingKey:"direct-queue-example",
-        body:byteMessage);
+        exchange:"topic-exchange-example",
+        routingKey:topic,
+        body:message
+        );
 }
-//Direct Exchange Deneme Bitişi//
+
+////Topic Exchange Deneme Bitişi//
+
+
+
+
+
 
 Console.Read();

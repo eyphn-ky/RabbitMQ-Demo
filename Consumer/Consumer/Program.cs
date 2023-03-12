@@ -29,23 +29,84 @@ using IModel channel= connection.CreateModel();
 //};
 
 
-//Direct Exchange Deneme Başlangıcı//
-//1-Publisher'da ki channel ile aynı isim ve türde exchange tanımlanmalıdır.
-channel.ExchangeDeclare(exchange: "direct-exchange-example", type: ExchangeType.Direct);//publisher'da ki exchange ile birebir aynı isim ve type'a sahip bir exchange tanımlanmalıdır.
+////Direct Exchange Deneme Başlangıcı//
+////1-Publisher'da ki channel ile aynı isim ve türde exchange tanımlanmalıdır.
+//channel.ExchangeDeclare(exchange: "direct-exchange-example", type: ExchangeType.Direct);//publisher'da ki exchange ile birebir aynı isim ve type'a sahip bir exchange tanımlanmalıdır.
 
-//2-Publisher tarafından rounting key'de bulunan değerdeki kuyruğa gönderilen mesajları, kendi oluşturduğumuz kuyruğa yönlendirerek tüketmemiz gerekmektedir. Bunun için öncelikle bir kuyruk oluşturulmalıdır.
-string queueName = channel.QueueDeclare().QueueName;
+////2-Publisher tarafından rounting key'de bulunan değerdeki kuyruğa gönderilen mesajları, kendi oluşturduğumuz kuyruğa yönlendirerek tüketmemiz gerekmektedir. Bunun için öncelikle bir kuyruk oluşturulmalıdır.
+//string queueName = channel.QueueDeclare().QueueName;
 
-//3-publisher hangi kuyruğa attıysa oraya bağlan.
-channel.QueueBind(queue: queueName, exchange: "direct-exchange-example",routingKey:"direct-queue-example");
+////3-publisher hangi kuyruğa attıysa oraya bağlan.
+//channel.QueueBind(queue: queueName, exchange: "direct-exchange-example",routingKey:"direct-queue-example");
 
-//4-mesajları tüket
+////4-mesajları tüket
+//EventingBasicConsumer consumer = new(channel);
+//channel.BasicConsume(queue:queueName,autoAck:true,consumer:consumer);
+//consumer.Received += (sender, e) =>
+//{
+//    string message = Encoding.UTF8.GetString(e.Body.Span);
+//    Console.WriteLine(message);
+//};
+////Direct Exchange Deneme Bitişi//
+
+
+
+////Fanout Exchange Deneme Başlangıcı
+//channel.ExchangeDeclare(
+//    exchange: "fanout-exchange-example",
+//    type: ExchangeType.Fanout);
+
+//Console.WriteLine("Kuyruk Adını giriniz : ");
+//string queueName = Console.ReadLine();
+//channel.QueueDeclare(queue: queueName,
+//    exclusive:false);
+//channel.QueueBind(queue: queueName,
+//    exchange: "fanout-exchange-example",
+//    routingKey: string.Empty);
+
+//EventingBasicConsumer consumer = new(channel);
+//channel.BasicConsume(queue: queueName,
+//    autoAck:true,
+//    consumer:consumer);
+
+//consumer.Received += (sender, e) =>
+//{
+//    string message = Encoding.UTF8.GetString(e.Body.Span);
+//    Console.WriteLine(message);
+//};
+////Fanout Exchange Deneme Bitişi
+
+
+////Topic Exchange Deneme Başlangıcı//
+channel.ExchangeDeclare(
+    exchange:"topic-exchange-example",
+    type:ExchangeType.Topic);
+
+Console.Write("Dinlenecek topic formatını belirtiniz : ");
+string topic = Console.ReadLine();
+string queueName=channel.QueueDeclare().QueueName;//kuyruk oluştur ve adına ulaş
+channel.QueueBind(
+    queue:queueName,
+    exchange: "topic-exchange-example",
+    routingKey:topic);
+
 EventingBasicConsumer consumer = new(channel);
-channel.BasicConsume(queue:queueName,autoAck:true,consumer:consumer);
+channel.BasicConsume(
+    queue: queueName,
+    autoAck: true,
+    consumer);
+
+
 consumer.Received += (sender, e) =>
 {
     string message = Encoding.UTF8.GetString(e.Body.Span);
     Console.WriteLine(message);
 };
-//Direct Exchange Deneme Bitişi//
+
+
+////Topic Exchange Deneme Bitişi//
+
+
+
+
 Console.Read();
