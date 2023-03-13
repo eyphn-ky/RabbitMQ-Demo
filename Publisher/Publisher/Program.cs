@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text;
 ConnectionFactory factory = new ConnectionFactory();
@@ -34,6 +35,8 @@ using IModel channel = connection.CreateModel();
 //    channel.BasicPublish(exchange: "", routingKey: "example-queue", body: message,basicProperties:properties);//boş bırakmak veya parametre vermemek defaul exchange olan direct exchange ile çalışmasını sağlayacaktır.
 //}
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#region Direct Exchange
 ////Direct Exchange Deneme Başlangıcı//
 //channel.ExchangeDeclare(exchange: "direct-exchange-example", type: ExchangeType.Direct);
 //while (true)
@@ -47,8 +50,9 @@ using IModel channel = connection.CreateModel();
 //        body:byteMessage);
 //}
 ////Direct Exchange Deneme Bitişi//
+#endregion
 
-
+#region Fanout Exchange
 ////Fanout Exchange Deneme Başlangıcı//
 //channel.ExchangeDeclare(exchange:"fanout-exchange-example",type:ExchangeType.Fanout);
 //for (int i = 0; i < 10; i++)
@@ -62,29 +66,55 @@ using IModel channel = connection.CreateModel();
 
 //}
 ////Fanout Exchange Deneme Bitişi//
+#endregion
 
+#region Topic Exchange
 ////Topic Exchange Deneme Başlangıcı//
-channel.ExchangeDeclare(
-    exchange:"topic-exchange-example",
-    type:ExchangeType.Topic
-    );
-for( int i = 0; i < 10; i++)
+//channel.ExchangeDeclare(
+//    exchange:"topic-exchange-example",
+//    type:ExchangeType.Topic
+//    );
+//for( int i = 0; i < 10; i++)
+//{
+//    await Task.Delay(200);
+//    byte[] message = Encoding.UTF8.GetBytes($"Merhaba {i}");
+//    Console.Write("Mesajın Gönderileceği Topic Formatını Belirtiniz : ");
+//    string topic = Console.ReadLine();
+//    channel.BasicPublish(
+//        exchange:"topic-exchange-example",
+//        routingKey:topic,
+//        body:message
+//        );
+//}
+////Topic Exchange Deneme Bitişi//
+#endregion
+
+#region Header Exchange
+//Header tüm exchange türlerinde vardır. Eğer bunu kullanırsan header exchange davranışını benimsemiş olursun. Diğerlerine göre bir ekstrası yoktur. İsteğe bağlı olarak kullanılabilir.
+////Header Exchange Deneme Başlangıcı
+channel.ExchangeDeclare("header-exchange-example", type: ExchangeType.Headers);
+for (int i = 0; i < 10; i++)
 {
     await Task.Delay(200);
     byte[] message = Encoding.UTF8.GetBytes($"Merhaba {i}");
-    Console.Write("Mesajın Gönderileceği Topic Formatını Belirtiniz : ");
-    string topic = Console.ReadLine();
+    Console.WriteLine("Header Value Girin : ");
+    string value = Console.ReadLine();
+    IBasicProperties basicProperties= channel.CreateBasicProperties();
+    basicProperties.Headers= new Dictionary<string,object>
+    {
+        ["no"]=value,
+
+    };
     channel.BasicPublish(
-        exchange:"topic-exchange-example",
-        routingKey:topic,
-        body:message
-        );
+        exchange: "header-exchange-example",
+        routingKey: string.Empty,
+        body: message,
+        basicProperties: basicProperties
+        ); 
 }
 
-////Topic Exchange Deneme Bitişi//
-
-
-
+////Header Exchange Deneme Bitişi
+#endregion
 
 
 

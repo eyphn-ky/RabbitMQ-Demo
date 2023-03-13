@@ -78,34 +78,63 @@ using IModel channel= connection.CreateModel();
 
 
 ////Topic Exchange Deneme Başlangıcı//
-channel.ExchangeDeclare(
-    exchange:"topic-exchange-example",
-    type:ExchangeType.Topic);
+//channel.ExchangeDeclare(
+//    exchange:"topic-exchange-example",
+//    type:ExchangeType.Topic);
 
-Console.Write("Dinlenecek topic formatını belirtiniz : ");
-string topic = Console.ReadLine();
-string queueName=channel.QueueDeclare().QueueName;//kuyruk oluştur ve adına ulaş
+//Console.Write("Dinlenecek topic formatını belirtiniz : ");
+//string topic = Console.ReadLine();
+//string queueName=channel.QueueDeclare().QueueName;//kuyruk oluştur ve adına ulaş
+//channel.QueueBind(
+//    queue:queueName,
+//    exchange: "topic-exchange-example",
+//    routingKey:topic);
+
+//EventingBasicConsumer consumer = new(channel);
+//channel.BasicConsume(
+//    queue: queueName,
+//    autoAck: true,
+//    consumer);
+
+
+//consumer.Received += (sender, e) =>
+//{
+//    string message = Encoding.UTF8.GetString(e.Body.Span);
+//    Console.WriteLine(message);
+//};
+////Topic Exchange Deneme Bitişi//
+
+////Header Exchange Deneme Başlangıcı
+channel.ExchangeDeclare(
+    exchange: "header-exchange-example",
+    type: ExchangeType.Headers
+    );
+Console.Write("Header value girin : ");
+string value = Console.ReadLine();
+string queueName = channel.QueueDeclare().QueueName;//kuyruk oluşturuldu rabbitmq sunucusuna eklendi. Biz ismini aldık.
+
 channel.QueueBind(
     queue:queueName,
-    exchange: "topic-exchange-example",
-    routingKey:topic);
-
+    exchange: "header-exchange-example",
+    routingKey:string.Empty,
+    new Dictionary<string, object>
+    {
+        ["no"]=value
+    }
+    );
 EventingBasicConsumer consumer = new(channel);
 channel.BasicConsume(
     queue: queueName,
     autoAck: true,
-    consumer);
-
-
+    consumer: consumer
+    );
 consumer.Received += (sender, e) =>
 {
     string message = Encoding.UTF8.GetString(e.Body.Span);
     Console.WriteLine(message);
 };
 
-
-////Topic Exchange Deneme Bitişi//
-
+////Header Exchange Deneme Bitişi
 
 
 
